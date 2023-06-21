@@ -16,36 +16,48 @@ public class Localizer {
     public static double forwardOffset = 1; // mm
     public static double mmPerTick = 694; // (mm / rev) / (ticks / rev) = mm / ticks
 
+    //magic matrix that Converts processed wheel positions to relative robot pose change
+    SimpleMatrix C;
+
     public Localizer(Motor leftEncoder, Motor rightEncoder, Motor midEncoder) {
+        //instantiate motors
         this.leftEncoder = leftEncoder;
         this.rightEncoder = rightEncoder;
         this.midEncoder = midEncoder;
+
+        /*
+        create conversion matrix, this is done in the constructor so that if an opMode is reinitialized,
+        any changes to the trackWidth or forwardOffset will be reflected in this matrix without the need to push code
+        */
+        C = new SimpleMatrix(new double[][]{
+                new double[]{0.5, 0.5, 0},
+                new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
+                new double[]{1 / trackWidth, -1 / trackWidth, 0},
+        });
     }
 
-    public double[] calcDelOdo() {
-
+    public SimpleMatrix calcDelOdo() {
         //grab encoder positions
         double newLeftPos = leftEncoder.getPos();
-        double newMidPos = midEncoder.getPos();
         double newRightPos = rightEncoder.getPos();
+        double newMidPos = midEncoder.getPos();
 
         //calculate difference in current and new encoder positions, convert from ticks to mm
-        double[] delOdo = new double[]{
-                (newLeftPos - leftPos) * mmPerTick,
-                (newMidPos - midPos) * mmPerTick,
-                (newRightPos - rightPos) * mmPerTick,
-        };
+        SimpleMatrix delOdo = new SimpleMatrix(new double[][]{
+                new double[]{ (newLeftPos - leftPos) * mmPerTick },
+                new double[]{ (newRightPos - rightPos) * mmPerTick },
+                new double[]{ (newMidPos - midPos) * mmPerTick },
+        });
 
         //save new encoder positions
         leftPos = newLeftPos;
-        midPos = newMidPos;
         rightPos = newRightPos;
+        midPos = newMidPos;
 
         return delOdo;
     }
 
     public SimpleMatrix calcPoseExp(double angle) {
-
         //pose exponential is identity matrix by default, in case angle is zero
         SimpleMatrix PoseExp = SimpleMatrix.identity(3);
 
@@ -61,27 +73,14 @@ public class Localizer {
     }
 
     public SimpleMatrix calcDelRobot() {
-        double[] delOdo = calcDelOdo(); //delOdo[0] = change in left encoder, delOdo[1] = change in mid encoder, delOdo[2] = change in right encoder
+        //multiplying the conversion matrix with the odometry wheel matrix returns the matrix of the relative robot pose change
+        SimpleMatrix delRobot = C.mult(calcDelOdo());
 
-        //calculate change in angle
-        double phi = (delOdo[0] - delOdo[2]) / trackWidth;
-
-        //calculate relative vertical displacement of robot
-        double centerDisplacement = (delOdo[0] + delOdo[2]) / 2;
-
-        //calculate relative horizontal displacement of robot
-        double horizontalDisplacement = delOdo[1] - (forwardOffset * phi);
-
-        //save values into a matrix
-        SimpleMatrix delRobot = new SimpleMatrix(new double[][] {
-                new double[] {centerDisplacement},
-                new double[] {horizontalDisplacement},
-                new double[] {phi},
-        });
-
-        //calculate the pose exponential and then multiply the matrices together to get relative change in robot pose
-        SimpleMatrix PoseExp = calcPoseExp(phi);
-        return PoseExp.mult(delRobot);
+        /*
+        calculate the pose exponential and then multiply it with the robot pose change matrix
+        entry (3,1) in the robot pose change matrix is the change in heading, which is used to calculate the pose exponential
+        */
+        return calcPoseExp(delRobot.get(3, 1)).mult(delRobot);
     }
 
 
@@ -95,7 +94,6 @@ public class Localizer {
         });
 
         //calculate relative change in robot pose and rotate by the current robot heading
-        SimpleMatrix delRobot = calcDelRobot();
-        return rotation.mult(delRobot);
+        return rotation.mult(calcDelRobot());
     }
 }
