@@ -23,6 +23,12 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url = 'https://jitpack.io'
+    }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')

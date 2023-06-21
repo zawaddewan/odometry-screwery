@@ -42,11 +42,11 @@ public class Localizer {
         double newRightPos = rightEncoder.getPos();
         double newMidPos = midEncoder.getPos();
 
-        //calculate difference in current and new encoder positions, convert from ticks to mm
-        SimpleMatrix delOdo = new SimpleMatrix(new double[][]{
-                new double[]{ (newLeftPos - leftPos) * mmPerTick },
-                new double[]{ (newRightPos - rightPos) * mmPerTick },
-                new double[]{ (newMidPos - midPos) * mmPerTick },
+        //calculate difference in current and new encoder positions, convert from ticks to mm, store in column vector
+        SimpleMatrix delOdo = new SimpleMatrix(new double[]{
+                (newLeftPos - leftPos) * mmPerTick,
+                (newRightPos - rightPos) * mmPerTick,
+                (newMidPos - midPos) * mmPerTick
         });
 
         //save new encoder positions
