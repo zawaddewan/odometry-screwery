@@ -11,6 +11,9 @@ public class Motor {
     public Motor(HardwareMap hwMap, String name) {
         motor = hwMap.get(DcMotorEx.class, name);
     }
+    public Motor(DcMotorEx motor) {
+        this.motor = motor;
+    }
 
     public void setEpsilon(double input) {
         epsilon = input;
