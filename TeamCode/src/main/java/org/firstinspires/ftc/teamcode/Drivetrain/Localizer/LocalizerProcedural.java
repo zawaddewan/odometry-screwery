@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Localizer;
+package org.firstinspires.ftc.teamcode.Drivetrain.Localizer;
 
 import org.ejml.data.DMatrix3;
 import org.ejml.data.DMatrix3x3;
@@ -20,6 +20,8 @@ public class LocalizerProcedural {
     public static double trackWidth = 1; // mm
     public static double forwardOffset = 1; // mm
     public static double mmPerTick = 694; // (mm / rev) / (ticks / rev) = mm / ticks
+    public static double X_MULTIPLIER = 1;
+    public static double Y_MULTIPLIER = 1;
 
     //magic matrix that Converts processed wheel positions to relative robot pose change
     DMatrix3x3 C;
@@ -49,9 +51,9 @@ public class LocalizerProcedural {
 
         //calculate difference in current and new encoder positions, convert from ticks to mm, store in column vector
         DMatrix3 delOdo = new DMatrix3(
-                (newLeftPos - leftPos) * mmPerTick,
-                (newRightPos - rightPos) * mmPerTick,
-                (newMidPos - midPos) * mmPerTick
+                (newLeftPos - leftPos) * mmPerTick * X_MULTIPLIER,
+                (newRightPos - rightPos) * mmPerTick * X_MULTIPLIER,
+                (newMidPos - midPos) * mmPerTick * Y_MULTIPLIER
         );
 
         //save new encoder positions
@@ -86,7 +88,7 @@ public class LocalizerProcedural {
         //convert odometry
         mult(C, O, delG);
         //multiply by pose exp
-        mult(calcPoseExp(delG.unsafe_get(3, 1)), delG, O);
+        mult(calcPoseExp(delG.unsafe_get(2, 0)), delG, O);
         //rotate
         mult(genRotate(theta, false), O, delG);
         return delG;

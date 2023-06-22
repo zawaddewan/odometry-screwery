@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.Localizer;
+package org.firstinspires.ftc.teamcode.Drivetrain.Localizer;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
@@ -15,9 +17,16 @@ public class Localizer {
     public static double trackWidth = 1; // mm
     public static double forwardOffset = 1; // mm
     public static double mmPerTick = 694; // (mm / rev) / (ticks / rev) = mm / ticks
+    public static double X_MULTIPLIER = 1;
+    public static double Y_MULTIPLIER = 1;
 
     //magic matrix that Converts processed wheel positions to relative robot pose change
     SimpleMatrix C;
+
+    public static boolean poseExponential = true;
+
+    public double timeOfLastCalc = 0; //ms
+    ElapsedTime timer;
 
     public Localizer(Motor leftEncoder, Motor rightEncoder, Motor midEncoder) {
         //instantiate motors
@@ -34,6 +43,15 @@ public class Localizer {
                 new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
                 new double[]{1 / trackWidth, -1 / trackWidth, 0},
         });
+
+        timer = new ElapsedTime();
+    }
+
+    public SimpleMatrix update(SimpleMatrix pose) {
+        double currentTime = timer.milliseconds();
+        pose.plus(calcDelGlobal(pose.get(2, 0)));
+        timeOfLastCalc = timer.milliseconds() - currentTime;
+        return pose;
     }
 
     public SimpleMatrix calcDelOdo() {
@@ -44,9 +62,9 @@ public class Localizer {
 
         //calculate difference in current and new encoder positions, convert from ticks to mm, store in column vector
         SimpleMatrix delOdo = new SimpleMatrix(new double[]{
-                (newLeftPos - leftPos) * mmPerTick,
-                (newRightPos - rightPos) * mmPerTick,
-                (newMidPos - midPos) * mmPerTick
+                (newLeftPos - leftPos) * mmPerTick * X_MULTIPLIER,
+                (newRightPos - rightPos) * mmPerTick * X_MULTIPLIER,
+                (newMidPos - midPos) * mmPerTick * Y_MULTIPLIER
         });
 
         //save new encoder positions
@@ -62,7 +80,7 @@ public class Localizer {
         SimpleMatrix PoseExp = SimpleMatrix.identity(3);
 
         //if angle is not 0, calculate the pose exponential matrix
-        if (angle != 0) {
+        if (angle != 0 && poseExponential) {
             PoseExp = new SimpleMatrix(new double[][]{
                     new double[]{Math.sin(angle) / angle, (Math.cos(angle) - 1) / angle, 0},
                     new double[]{(1 - Math.cos(angle)) / angle, Math.sin(angle) / angle, 0},
@@ -80,7 +98,8 @@ public class Localizer {
         calculate the pose exponential and then multiply it with the robot pose change matrix
         entry (3,1) in the robot pose change matrix is the change in heading, which is used to calculate the pose exponential
         */
-        return calcPoseExp(delRobot.get(3, 1)).mult(delRobot);
+
+        return calcPoseExp(delRobot.get(2, 0)).mult(delRobot);
     }
 
 
@@ -95,5 +114,9 @@ public class Localizer {
 
         //calculate relative change in robot pose and rotate by the current robot heading
         return rotation.mult(calcDelRobot());
+    }
+
+    public double getTimeOfLastCalc() {
+        return timeOfLastCalc;
     }
 }
