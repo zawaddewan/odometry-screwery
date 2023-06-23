@@ -26,42 +26,40 @@ public class PIDController {
     }
 
     public double update(double measurement) {
-        double output = 0;
         double error = target - measurement;
-        //if error exceeds allowable tolerance, run the controller
-        if(Math.abs(error) > tolerance) {
+        return calcFeedback(error);
+    }
 
-            //this is the "dt" used for calculating the derivative and integral
-            double dt = timer.milliseconds();
-
-            //calculate proportional plant
-            double proportional = error * kP;
-
-            //calculate integral plant
-            integral += error * dt;
-            //if integral exceeds the maximum allowed integral sum, clip it to the maxIntegral
-            if(Math.abs(integral) > Math.abs(maxIntegral)) {
-                integral = maxIntegral * Math.signum(integral);
-            }
-            //if we've crossed beyond the target, reset the integral
-            if(Math.signum(error) != Math.signum(lastError)) {
-                integral = 0;
-            }
-
-            //low pass filter for derivative plant
-            double filterEstimate = (filterGain * lastFilterEstimate) + (1 - filterGain) * (error - lastError);
-            lastFilterEstimate = filterEstimate;
-            //calculate derivative plant using filtered data
-            double derivative = filterEstimate / dt;
-
-            //calculate controller output
-            output = proportional + integral + derivative;
-        }
-
-        //set lastError to error and reset the timer, this prepares the derivative plant for the next loop
+    public double calcFeedback(double error) {
+        double dt = timer.milliseconds();
+        double output = error * kP + integrate(error, dt) + differentiate(error, dt);
         lastError = error;
         timer.reset();
-        return output;
+        if(Math.abs(error) > tolerance) {
+            return output;
+        }else {
+            return 0;
+        }
+    }
+    //calculate integral plant
+    public double integrate(double error, double dt) {
+        integral += error * dt;
+        //if integral exceeds the maximum allowed integral sum, clip it to the maxIntegral
+        if(Math.abs(integral) > Math.abs(maxIntegral)) {
+            integral = maxIntegral * Math.signum(integral);
+        }
+        //if we've crossed beyond the target, reset the integral
+        if(Math.signum(error) != Math.signum(lastError)) {
+            integral = 0;
+        }
+        return integral;
+    }
+    //calculate derivative plant using filtered data
+    public double differentiate(double error, double dt) {
+        //low pass filter
+        double filterEstimate = (filterGain * lastFilterEstimate) + (1 - filterGain) * (error - lastError);
+        lastFilterEstimate = filterEstimate;
+        return filterEstimate / dt;
     }
 
     //sets the target for the controller
@@ -93,4 +91,5 @@ public class PIDController {
         this.kI = kI;
         this.kD = kD;
     }
+
 }

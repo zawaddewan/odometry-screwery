@@ -10,7 +10,7 @@ public class Utils {
     public static double trackWidth = 1;
     public static double wheelRadius = 1;
 
-    //m is the 'mecanum constant' which characterizes the drivetrain shape, the average of the wheelbase and track width
+    //m is the 'mecanum constant', the average of the wheelbase and track width
     public static double m = (wheelBase + trackWidth) / 2;
 
     //Forward Kinematic Matrix

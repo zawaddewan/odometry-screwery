@@ -1,12 +1,27 @@
 package org.firstinspires.ftc.teamcode.Motor;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.ejml.equation.IntegerSequence;
+
 public class Motor {
-    DcMotorEx motor;
+    public DcMotorEx motor;
     double epsilon = 0;
     double power = 0;
+
+    public enum ZeroPowerMode {
+        BRAKE(DcMotor.ZeroPowerBehavior.BRAKE),
+        FLOAT(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        public DcMotor.ZeroPowerBehavior mode;
+
+        ZeroPowerMode(DcMotor.ZeroPowerBehavior mode) {
+            this.mode = mode;
+        }
+    }
 
     public Motor(HardwareMap hwMap, String name) {
         motor = hwMap.get(DcMotorEx.class, name);
@@ -28,5 +43,25 @@ public class Motor {
 
     public double getPos() { // gets the encoder positions
         return motor.getCurrentPosition();
+    }
+
+    public void setReversed(boolean reversed) {
+        if(reversed) {
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }else {
+            motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+    }
+
+    public boolean isReversed() {
+        return motor.getDirection().equals(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public void setZeroPowerMode(ZeroPowerMode mode) {
+        if(mode.equals(ZeroPowerMode.BRAKE)) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }else {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
     }
 }
