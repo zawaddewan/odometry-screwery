@@ -7,6 +7,9 @@ import org.firstinspires.ftc.teamcode.Motor.Motor;
 import static org.ejml.dense.fixed.CommonOps_DDF3.*;
 import static org.firstinspires.ftc.teamcode.Utils.Utils.*;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class LocalizerProcedural {
 
     Motor leftEncoder;

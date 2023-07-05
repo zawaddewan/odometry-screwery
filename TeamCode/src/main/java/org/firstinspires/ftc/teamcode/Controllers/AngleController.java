@@ -11,8 +11,12 @@ public class AngleController extends PIDController{
 
     @Override
     public double update(double measurement) {
-        double error = angleWrapRad(target - measurement);
-        return calcFeedback(error);
+        double error = target - measurement;
+        return calcFeedbackWrap(error);
+    }
+
+    public double calcFeedbackWrap(double error) {
+        return calcFeedback(angleWrapRad(error));
     }
 
     public double updateDegrees(double degrees) {

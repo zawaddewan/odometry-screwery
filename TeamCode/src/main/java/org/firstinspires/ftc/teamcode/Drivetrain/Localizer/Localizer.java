@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Drivetrain.Localizer;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import static org.firstinspires.ftc.teamcode.Utils.Utils.*;
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
 
+@Config
 public class Localizer {
     Motor leftEncoder;
     Motor midEncoder;
@@ -106,11 +108,7 @@ public class Localizer {
 
     public SimpleMatrix calcDelGlobal(double theta) { //theta is current robot heading
         //calculate rotation matrix given current robot heading
-        SimpleMatrix rotation = new SimpleMatrix(new double[][] {
-                new double[] {Math.cos(theta), -1 * Math.sin(theta), 0},
-                new double[] {Math.sin(theta), Math.cos(theta), 0},
-                new double[] {0, 0, 1},
-        });
+        SimpleMatrix rotation = SimpleMatrix.wrap(genRotate(theta, false));
 
         //calculate relative change in robot pose and rotate by the current robot heading
         return rotation.mult(calcDelRobot());
