@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Motor;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.ejml.equation.IntegerSequence;
 
+@Config
 public class Motor {
     public DcMotorEx motor;
     double epsilon = 0;

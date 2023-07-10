@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Drivetrain.Localizer;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.Utils.Utils.*;
 import org.ejml.simple.SimpleMatrix;
@@ -30,8 +31,12 @@ public class Localizer {
     public double timeOfLastCalc = 0; //ms
     ElapsedTime timer;
 
+    public Localizer(HardwareMap hardwareMap) {
+        this(new Motor(hardwareMap, "leftFront"), new Motor(hardwareMap, "rightFront"), new Motor(hardwareMap, "midEncoder"));
+    }
+
     public Localizer(Motor leftEncoder, Motor rightEncoder, Motor midEncoder) {
-        //instantiate motors
+        //instantiate "motors"
         this.leftEncoder = leftEncoder;
         this.rightEncoder = rightEncoder;
         this.midEncoder = midEncoder;

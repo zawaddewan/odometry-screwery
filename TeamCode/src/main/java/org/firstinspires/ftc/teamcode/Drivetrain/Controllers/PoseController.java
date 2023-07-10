@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Drivetrain.Controllers;
 
+import com.acmerobotics.dashboard.SocketHandler;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.checkerframework.checker.units.qual.A;
@@ -44,7 +45,7 @@ public class PoseController {
     }
 
     //calculates PID feedback and stores it in matrix form
-    public SimpleMatrix calcFeedback(double pose) {
+    public SimpleMatrix calcFeedback(SimpleMatrix pose) {
         error = target.minus(pose);
         return new SimpleMatrix(new double[]{
                 xControl.calcFeedback(error.get(0)),
@@ -54,7 +55,7 @@ public class PoseController {
     }
 
     //calculates PID feedback, rotates it to robot coordinates, and then uses inverse kinematics to generate wheel velocities
-    public SimpleMatrix update(double pose) {
+    public SimpleMatrix update(SimpleMatrix pose) {
         SimpleMatrix feedback = calcFeedback(pose);
         SimpleMatrix rotator = SimpleMatrix.wrap(genRotate(feedback.get(2), true));
         return inverseKinematicTransform(rotator.mult(feedback));

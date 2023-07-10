@@ -72,5 +72,16 @@ public class Utils {
         return Math.toRadians(angleWrapDeg(Math.toDegrees(radians)));
     }
 
+    public static double[] flattenDoubleArray(double[][] arr) {
+        double[] result = new double[arr.length * arr[0].length];
+        for(int i = 0; i < arr.length; i++) {
+            for(int j = 0; j < arr[i].length; j++) {
+                result[i+j] = arr[i][j];
+            }
+        }
+
+        return result;
+    }
+
 
 }
