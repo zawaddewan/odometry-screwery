@@ -58,6 +58,15 @@ public class Utils {
         );
     }
 
+    public static SimpleMatrix genRotateSimple(double theta, boolean clockwise) {
+        if(clockwise) {theta *= -1;}
+        return new SimpleMatrix(new double[][]{
+                new double[]{Math.cos(theta), -1 * Math.sin(theta), 0},
+                new double[]{Math.sin(theta), Math.cos(theta), 0},
+                new double[]{0, 0, 1},
+        });
+    }
+
     //wraps an angle from -180 to 180 degrees
     public static double angleWrapDeg(double degrees) {
         double wrap = (degrees + 180) % 360;

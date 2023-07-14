@@ -27,6 +27,8 @@ public class Motor {
 
     public Motor(HardwareMap hwMap, String name) {
         motor = hwMap.get(DcMotorEx.class, name);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public Motor(DcMotorEx motor) {
         this.motor = motor;

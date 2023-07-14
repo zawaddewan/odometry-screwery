@@ -13,9 +13,9 @@ public class Localizer {
     Motor midEncoder;
     Motor rightEncoder;
 
-    double leftPos = 0;
-    double midPos = 0;
-    double rightPos = 0;
+    public double leftPos = 0;
+    public double midPos = 0;
+    public double rightPos = 0;
 
     public static double trackWidth = 1; // mm
     public static double forwardOffset = 1; // mm
@@ -32,7 +32,22 @@ public class Localizer {
     ElapsedTime timer;
 
     public Localizer(HardwareMap hardwareMap) {
-        this(new Motor(hardwareMap, "leftFront"), new Motor(hardwareMap, "rightFront"), new Motor(hardwareMap, "midEncoder"));
+        //instantiate "motors"
+        leftEncoder = new Motor(hardwareMap, "leftFront");
+        rightEncoder = new Motor(hardwareMap, "rightFront");
+        midEncoder = new Motor(hardwareMap, "leftBack");
+
+        /*
+        create conversion matrix, this is done in the constructor so that if an opMode is reinitialized,
+        any changes to the trackWidth or forwardOffset will be reflected in this matrix without the need to push code
+        */
+        C = new SimpleMatrix(new double[][]{
+                new double[]{0.5, 0.5, 0},
+                new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
+                new double[]{1 / trackWidth, -1 / trackWidth, 0},
+        });
+
+        timer = new ElapsedTime();
     }
 
     public Localizer(Motor leftEncoder, Motor rightEncoder, Motor midEncoder) {
@@ -113,7 +128,7 @@ public class Localizer {
 
     public SimpleMatrix calcDelGlobal(double theta) { //theta is current robot heading
         //calculate rotation matrix given current robot heading
-        SimpleMatrix rotation = SimpleMatrix.wrap(genRotate(theta, false));
+        SimpleMatrix rotation = genRotateSimple(theta, false);
 
         //calculate relative change in robot pose and rotate by the current robot heading
         return rotation.mult(calcDelRobot());

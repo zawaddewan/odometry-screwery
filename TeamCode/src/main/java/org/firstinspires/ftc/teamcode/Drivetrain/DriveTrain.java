@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Drivetrain.Localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
 
 @Config
-public class Drivetrain {
+public class DriveTrain {
 
     //POSE CONTROLLER RELATED THINGS
     PoseController controller;
 
-    Localizer localizer;
+    public Localizer localizer;
 
     public static double xKP = 1;
     public static double xKI = 0;
@@ -45,7 +45,7 @@ public class Drivetrain {
     public static double motorEpsilon = 0; //motor power setting threshold value, see Motor.java
 
 
-    public Drivetrain(HardwareMap hardwareMap, boolean bulkReads) {
+    public DriveTrain(HardwareMap hardwareMap, boolean bulkReads) {
         //toggles bulk reads if desired
         if(bulkReads) {
             for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -62,10 +62,13 @@ public class Drivetrain {
         //keeping the motors in an array is helpful
         motors = new Motor[]{leftFront, leftBack, rightBack, rightFront};
 
+        //reverse motors
+        leftBack.setReversed(true);
+        leftFront.setReversed(true);
+
         //configure motors
         for(Motor motor : motors) {
             motor.setEpsilon(motorEpsilon);
-            motor.setReversed(false);
             motor.setZeroPowerMode(Motor.ZeroPowerMode.BRAKE);
         }
 
