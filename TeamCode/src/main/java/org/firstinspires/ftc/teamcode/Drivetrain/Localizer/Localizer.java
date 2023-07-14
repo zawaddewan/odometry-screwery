@@ -71,7 +71,7 @@ public class Localizer {
 
     public SimpleMatrix update(SimpleMatrix pose) {
         double currentTime = timer.milliseconds();
-        pose.plus(calcDelGlobal(pose.get(2, 0)));
+        calcDelGlobal(pose.get(2, 0));
         timeOfLastCalc = timer.milliseconds() - currentTime;
         return pose;
     }
@@ -131,7 +131,7 @@ public class Localizer {
         SimpleMatrix rotation = genRotateSimple(theta, false);
 
         //calculate relative change in robot pose and rotate by the current robot heading
-        return rotation.mult(calcDelRobot());
+        return rotation;
     }
 
     public double getTimeOfLastCalc() {
