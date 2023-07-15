@@ -131,7 +131,7 @@ public class Localizer {
         SimpleMatrix rotation = genRotateSimple(theta, false);
 
         //calculate relative change in robot pose and rotate by the current robot heading
-        return rotation;
+        return rotation.mult(calcDelRobot());
     }
 
     public double getTimeOfLastCalc() {
