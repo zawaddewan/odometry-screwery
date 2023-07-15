@@ -71,9 +71,9 @@ public class Localizer {
 
     public SimpleMatrix update(SimpleMatrix pose) {
         double currentTime = timer.milliseconds();
-        calcDelGlobal(pose.get(2, 0));
+        SimpleMatrix deltas = calcDelGlobal(pose.get(2, 0));
         timeOfLastCalc = timer.milliseconds() - currentTime;
-        return pose;
+        return pose.plus(deltas);
     }
 
     public SimpleMatrix calcDelOdo() {

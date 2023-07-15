@@ -145,10 +145,8 @@ public class DriveTrain {
 
     //runs the localizer
     public void updatePose() {
-        pose.plus(localizer.update(pose));
+        pose = localizer.update(pose);
     }
-
-    public SimpleMatrix localize() {return localizer.update(pose);}
 
     //sets target for pose controller given a 3 element column vector representing (x, y, theta)
     public void setTarget(SimpleMatrix target) {
