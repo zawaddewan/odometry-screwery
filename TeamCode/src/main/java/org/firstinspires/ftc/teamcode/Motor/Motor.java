@@ -13,6 +13,7 @@ public class Motor {
     public DcMotorEx motor;
     double epsilon = 0;
     double power = 0;
+    double encDir = 1;
 
     public enum ZeroPowerMode {
         BRAKE(DcMotor.ZeroPowerBehavior.BRAKE),
@@ -46,7 +47,7 @@ public class Motor {
     }
 
     public double getPos() { // gets the encoder positions
-        return motor.getCurrentPosition();
+        return encDir * motor.getCurrentPosition();
     }
 
     public void setReversed(boolean reversed) {
@@ -66,6 +67,14 @@ public class Motor {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }else {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+    }
+
+    public void reverseEncoder(boolean reverse) {
+        if(reverse) {
+            encDir = -1;
+        }else {
+            encDir = 1;
         }
     }
 }

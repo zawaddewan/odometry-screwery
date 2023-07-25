@@ -6,9 +6,9 @@ import org.ejml.simple.SimpleMatrix;
 public class Utils {
 
     //drivetrain stats
-    public static double wheelBase = 1;
-    public static double trackWidth = 1;
-    public static double wheelRadius = 1;
+    public static double wheelBase = 0.3429;
+    public static double trackWidth = 0.4191;
+    public static double wheelRadius = 0.048; //meters;
 
     //m is the 'mecanum constant', the average of the wheelbase and track width
     public static double m = (wheelBase + trackWidth) / 2;

@@ -17,9 +17,11 @@ public class Localizer {
     public double midPos = 0;
     public double rightPos = 0;
 
-    public static double trackWidth = 1; // mm
-    public static double forwardOffset = 1; // mm
-    public static double mmPerTick = 694; // (mm / rev) / (ticks / rev) = mm / ticks
+    public static double trackWidth = 0.4191; // m
+    public static double forwardOffset = 0.17145; // m
+    public static double ticksPerRev = 8192;
+    public static double odoWheelDiameter = 0.035; //m
+    public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev; // (m / rev) / (ticks / rev) = m / ticks
     public static double X_MULTIPLIER = 1;
     public static double Y_MULTIPLIER = 1;
 
@@ -36,6 +38,9 @@ public class Localizer {
         leftEncoder = new Motor(hardwareMap, "leftFront");
         rightEncoder = new Motor(hardwareMap, "rightFront");
         midEncoder = new Motor(hardwareMap, "leftBack");
+
+        //reverse any encoders if necessary
+        rightEncoder.reverseEncoder(true);
 
         /*
         create conversion matrix, this is done in the constructor so that if an opMode is reinitialized,
@@ -84,9 +89,9 @@ public class Localizer {
 
         //calculate difference in current and new encoder positions, convert from ticks to mm, store in column vector
         SimpleMatrix delOdo = new SimpleMatrix(new double[]{
-                (newLeftPos - leftPos) * mmPerTick * X_MULTIPLIER,
-                (newRightPos - rightPos) * mmPerTick * X_MULTIPLIER,
-                (newMidPos - midPos) * mmPerTick * Y_MULTIPLIER
+                (newLeftPos - leftPos) * mPerTick * X_MULTIPLIER,
+                (newRightPos - rightPos) * mPerTick * X_MULTIPLIER,
+                (newMidPos - midPos) * mPerTick * Y_MULTIPLIER
         });
 
         //save new encoder positions
