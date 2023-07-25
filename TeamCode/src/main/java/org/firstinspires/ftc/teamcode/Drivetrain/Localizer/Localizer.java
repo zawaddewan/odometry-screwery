@@ -40,7 +40,7 @@ public class Localizer {
         midEncoder = new Motor(hardwareMap, "leftBack");
 
         //reverse any encoders if necessary
-        rightEncoder.reverseEncoder(true);
+        leftEncoder.reverseEncoder(true);
 
         /*
         create conversion matrix, this is done in the constructor so that if an opMode is reinitialized,

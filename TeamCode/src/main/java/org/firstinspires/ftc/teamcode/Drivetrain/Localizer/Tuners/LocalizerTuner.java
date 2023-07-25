@@ -44,6 +44,9 @@ public class LocalizerTuner extends LinearOpMode {
 
         while (opModeIsActive()) {
             drivetrain.updatePose();
+
+            drivetrain.controlDT(gamepad1);
+
             /**Telemetry**/
 
             telemetry.addLine("Looptime [ms]: " + looptime.milliseconds());

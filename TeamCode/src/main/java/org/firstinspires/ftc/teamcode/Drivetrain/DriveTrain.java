@@ -63,8 +63,8 @@ public class DriveTrain {
         motors = new Motor[]{leftFront, leftBack, rightBack, rightFront};
 
         //reverse motors
-        leftBack.setReversed(true);
-        leftFront.setReversed(true);
+        rightBack.setReversed(true);
+        rightFront.setReversed(true);
 
         //configure motors
         for(Motor motor : motors) {
