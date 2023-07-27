@@ -17,8 +17,8 @@ public class Localizer {
     public double midPos = 0;
     public double rightPos = 0;
 
+    public static double forwardOffset = 0.15575; // m
     public static double trackWidth = 0.4191; // m
-    public static double forwardOffset = 0.17145; // m
     public static double ticksPerRev = 8192;
     public static double odoWheelDiameter = 0.035; //m
     public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev; // (m / rev) / (ticks / rev) = m / ticks
@@ -66,7 +66,7 @@ public class Localizer {
         any changes to the trackWidth or forwardOffset will be reflected in this matrix without the need to push code
         */
         C = new SimpleMatrix(new double[][]{
-                new double[]{0.5, 0.5, 0},
+                new double[]{1, 1, 0},
                 new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
                 new double[]{1 / trackWidth, -1 / trackWidth, 0},
         });
@@ -119,7 +119,18 @@ public class Localizer {
 
     public SimpleMatrix calcDelRobot() {
         //multiplying the conversion matrix with the odometry wheel matrix returns the matrix of the relative robot pose change
-        SimpleMatrix delRobot = C.mult(calcDelOdo());
+
+        SimpleMatrix delOdo = calcDelOdo();
+
+//        SimpleMatrix delRobot = C.mult(delOdo);
+
+
+
+        SimpleMatrix delRobot = new SimpleMatrix(new double[]{
+                (delOdo.get(0, 0) + delOdo.get(1, 0))/2,
+                delOdo.get(2, 0) - forwardOffset*((delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth),
+                (delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth
+        });
 
         /*
         calculate the pose exponential and then multiply it with the robot pose change matrix
