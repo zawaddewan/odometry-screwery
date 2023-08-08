@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.Drivetrain.Controllers.PoseController;
 import org.firstinspires.ftc.teamcode.Drivetrain.Localizer.Localizer;
+import org.firstinspires.ftc.teamcode.Drivetrain.Localizer.LocalizerProcedural;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
 
 @Config
@@ -17,6 +18,7 @@ public class DriveTrain {
     PoseController controller;
 
     public Localizer localizer;
+//    public LocalizerProcedural localizer;
 
     public static double xKP = 1;
     public static double xKI = 0;
@@ -74,6 +76,7 @@ public class DriveTrain {
 
         //instantiate localizer
         localizer = new Localizer(hardwareMap);
+//        localizer = new LocalizerProcedural(hardwareMap);
 
         //column vector of 0s aka (0, 0, 0) for (x, y, theta)
         pose = new SimpleMatrix(new double[]{0, 0, 0});

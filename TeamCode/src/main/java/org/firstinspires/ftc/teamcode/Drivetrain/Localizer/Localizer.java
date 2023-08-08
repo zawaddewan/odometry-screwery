@@ -18,7 +18,7 @@ public class Localizer {
     public double rightPos = 0;
 
     public static double forwardOffset = 0.15575; // m
-    public static double trackWidth = 0.4191; // m
+    public static double trackWidth = 0.409575; // m
     public static double ticksPerRev = 8192;
     public static double odoWheelDiameter = 0.035; //m
     public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev; // (m / rev) / (ticks / rev) = m / ticks
@@ -47,9 +47,9 @@ public class Localizer {
         any changes to the trackWidth or forwardOffset will be reflected in this matrix without the need to push code
         */
         C = new SimpleMatrix(new double[][]{
-                new double[]{0.5, 0.5, 0},
-                new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
-                new double[]{1 / trackWidth, -1 / trackWidth, 0},
+                new double[]{0.5, 0.5, 0.0},
+                new double[]{-1.0 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1.0},
+                new double[]{1.0 / trackWidth, -1.0 / trackWidth, 0.0},
         });
 
         timer = new ElapsedTime();
@@ -66,9 +66,9 @@ public class Localizer {
         any changes to the trackWidth or forwardOffset will be reflected in this matrix without the need to push code
         */
         C = new SimpleMatrix(new double[][]{
-                new double[]{1, 1, 0},
-                new double[]{-1 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1},
-                new double[]{1 / trackWidth, -1 / trackWidth, 0},
+                new double[]{0.5, 0.5, 0.0},
+                new double[]{-1.0 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1.0},
+                new double[]{1.0 / trackWidth, -1.0 / trackWidth, 0.0},
         });
 
         timer = new ElapsedTime();
@@ -126,11 +126,13 @@ public class Localizer {
 
 
 
-        SimpleMatrix delRobot = new SimpleMatrix(new double[]{
-                (delOdo.get(0, 0) + delOdo.get(1, 0))/2,
-                delOdo.get(2, 0) - forwardOffset*((delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth),
-                (delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth
-        });
+//        SimpleMatrix delRobot = new SimpleMatrix(new double[]{
+//                (delOdo.get(0, 0) + delOdo.get(1, 0))/2,
+//                delOdo.get(2, 0) - forwardOffset*((delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth),
+//                (delOdo.get(0, 0) - delOdo.get(1, 0)) / trackWidth
+//        });
+
+        SimpleMatrix delRobot = C.mult(delOdo);
 
         /*
         calculate the pose exponential and then multiply it with the robot pose change matrix

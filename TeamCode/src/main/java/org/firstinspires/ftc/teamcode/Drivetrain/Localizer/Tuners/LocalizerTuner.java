@@ -56,9 +56,9 @@ public class LocalizerTuner extends LinearOpMode {
             telemetry.addLine("X: " + (drivetrain.pose.get(0, 0)));
             telemetry.addLine("Y: " + (drivetrain.pose.get(1, 0)));
             telemetry.addLine("Theta: " + Math.toDegrees(drivetrain.pose.get(2, 0)));
-            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(0, 0));
-            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(1, 0));
-            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(2, 0));
+//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(0, 0));
+//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(1, 0));
+//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(2, 0));
             telemetry.update();
 
 
