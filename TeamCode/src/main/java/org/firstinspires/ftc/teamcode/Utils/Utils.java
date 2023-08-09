@@ -69,17 +69,30 @@ public class Utils {
 
     //wraps an angle from -180 to 180 degrees
     public static double angleWrapDeg(double degrees) {
-        double wrap = (degrees + 180) % 360;
-        if (wrap < 0) {
-            wrap += 360;
+        while(degrees > 180) {
+            degrees -= 2 * 180;
         }
-        return wrap - 180;
+        while(degrees < -180) {
+            degrees += 2 * 180;
+        }
+
+        return degrees;
+    }
+
+    public static double angleWrapRad(double radians) {
+        while(radians > Math.PI) {
+            radians -= 2 * Math.PI;
+        }
+        while (radians < -Math.PI) {
+            radians += 2 * Math.PI;
+        }
+        return radians;
     }
 
     //same as above but for radians
-    public static double angleWrapRad(double radians) {
-        return Math.toRadians(angleWrapDeg(Math.toDegrees(radians)));
-    }
+//    public static double angleWrapRad(double radians) {
+//        return Math.toRadians(angleWrapDeg(Math.toDegrees(radians)));
+//    }
 
     public static double[] flattenDoubleArray(double[][] arr) {
         double[] result = new double[arr.length * arr[0].length];

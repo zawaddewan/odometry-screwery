@@ -17,8 +17,8 @@ public class Localizer {
     public double midPos = 0;
     public double rightPos = 0;
 
-    public static double forwardOffset = 0.15575; // m
-    public static double trackWidth = 0.409575; // m
+    public static double forwardOffset = -0.15575; // m
+    public static double trackWidth = 0.39; // m
     public static double ticksPerRev = 8192;
     public static double odoWheelDiameter = 0.035; //m
     public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev; // (m / rev) / (ticks / rev) = m / ticks
@@ -77,8 +77,14 @@ public class Localizer {
     public SimpleMatrix update(SimpleMatrix pose) {
         double currentTime = timer.milliseconds();
         SimpleMatrix deltas = calcDelGlobal(pose.get(2, 0));
+        // TODO: figure out why we need this
+        SimpleMatrix headingCheese = new SimpleMatrix(new double[][]{
+                new double[]{1, 0, 0},
+                new double[]{0, 1, 0},
+                new double[]{0, 0, -1},
+        });
         timeOfLastCalc = timer.milliseconds() - currentTime;
-        return pose.plus(deltas);
+        return pose.plus(headingCheese.mult(deltas));
     }
 
     public SimpleMatrix calcDelOdo() {

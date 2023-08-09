@@ -9,7 +9,7 @@ public class PIDController {
 
     ElapsedTime timer;
 
-    public PIDController(double kP, double kD, double kI, double filterGain, double tolerance) {
+    public PIDController(double kP, double kI, double kD, double filterGain, double tolerance) {
         this.kP = kP;
         this.kD = kD;
         this.kI = kI;
@@ -21,8 +21,8 @@ public class PIDController {
         lastFilterEstimate = 0;
     }
 
-    public PIDController(double kP, double kD, double kI) {
-        this(kP, kD, kI, 0, 0);
+    public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, 0, 0);
     }
 
     public double update(double measurement) {
@@ -32,7 +32,7 @@ public class PIDController {
 
     public double calcFeedback(double error) {
         double dt = timer.milliseconds();
-        double output = error * kP + integrate(error, dt) + differentiate(error, dt);
+        double output = error * kP + integrate(error, dt) * kI + differentiate(error, dt) * kD;
         lastError = error;
         timer.reset();
         if(Math.abs(error) > tolerance) {
