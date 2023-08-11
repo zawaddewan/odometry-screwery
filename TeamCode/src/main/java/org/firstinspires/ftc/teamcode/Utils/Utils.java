@@ -50,7 +50,9 @@ public class Utils {
 
     //generates rotation matrix for either clockwise (robot to global) or counterclockwise (global to robot)
     public static DMatrix3x3 genRotate(double theta, boolean clockwise) {
-        if(clockwise) {theta *= -1;}
+        if (clockwise) {
+            theta *= -1;
+        }
         return new DMatrix3x3(
                 Math.cos(theta), -1 * Math.sin(theta), 0,
                 Math.sin(theta), Math.cos(theta), 0,
@@ -59,7 +61,9 @@ public class Utils {
     }
 
     public static SimpleMatrix genRotateSimple(double theta, boolean clockwise) {
-        if(clockwise) {theta *= -1;}
+        if (clockwise) {
+            theta *= -1;
+        }
         return new SimpleMatrix(new double[][]{
                 new double[]{Math.cos(theta), -1 * Math.sin(theta), 0},
                 new double[]{Math.sin(theta), Math.cos(theta), 0},
@@ -67,12 +71,14 @@ public class Utils {
         });
     }
 
+
+
     //wraps an angle from -180 to 180 degrees
     public static double angleWrapDeg(double degrees) {
-        while(degrees > 180) {
+        while (degrees > 180) {
             degrees -= 2 * 180;
         }
-        while(degrees < -180) {
+        while (degrees < -180) {
             degrees += 2 * 180;
         }
 
@@ -80,7 +86,7 @@ public class Utils {
     }
 
     public static double angleWrapRad(double radians) {
-        while(radians > Math.PI) {
+        while (radians > Math.PI) {
             radians -= 2 * Math.PI;
         }
         while (radians < -Math.PI) {
@@ -96,9 +102,9 @@ public class Utils {
 
     public static double[] flattenDoubleArray(double[][] arr) {
         double[] result = new double[arr.length * arr[0].length];
-        for(int i = 0; i < arr.length; i++) {
-            for(int j = 0; j < arr[i].length; j++) {
-                result[i+j] = arr[i][j];
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[i].length; j++) {
+                result[i + j] = arr[i][j];
             }
         }
 

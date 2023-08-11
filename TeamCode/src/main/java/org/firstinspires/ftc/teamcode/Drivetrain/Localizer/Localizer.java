@@ -4,7 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.Utils.Utils.*;
+
+import org.checkerframework.checker.units.qual.K;
 import org.ejml.simple.SimpleMatrix;
+import org.firstinspires.ftc.teamcode.Drivetrain.Filters.KalmanFilter;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
 
 @Config
@@ -25,10 +28,17 @@ public class Localizer {
     public static double X_MULTIPLIER = 1;
     public static double Y_MULTIPLIER = 1;
 
+    // Kalman filter
+    public static double Q = 0.01; // model covariance
+    public static double R = 0.01; // sensor covariance
+    KalmanFilter kalmanFilter;
+
     //magic matrix that Converts processed wheel positions to relative robot pose change
     SimpleMatrix C;
 
     public static boolean poseExponential = true;
+
+    public double thetaDW, thetaIMU, thetaFiltered;
 
     public double timeOfLastCalc = 0; //ms
     ElapsedTime timer;
@@ -51,6 +61,11 @@ public class Localizer {
                 new double[]{-1.0 * forwardOffset / trackWidth, forwardOffset / trackWidth, 1.0},
                 new double[]{1.0 / trackWidth, -1.0 / trackWidth, 0.0},
         });
+
+        // Kalman filter
+        // TODO: initial state not jank
+        kalmanFilter = new KalmanFilter(0, Q, R);
+
 
         timer = new ElapsedTime();
     }
@@ -77,15 +92,34 @@ public class Localizer {
     public SimpleMatrix update(SimpleMatrix pose) {
         double currentTime = timer.milliseconds();
         SimpleMatrix deltas = calcDelGlobal(pose.get(2, 0));
+
         // TODO: figure out why we need this
         SimpleMatrix headingCheese = new SimpleMatrix(new double[][]{
                 new double[]{1, 0, 0},
                 new double[]{0, 1, 0},
                 new double[]{0, 0, -1},
         });
+
         timeOfLastCalc = timer.milliseconds() - currentTime;
-        return pose.plus(headingCheese.mult(deltas));
+
+        SimpleMatrix cheesedDeltas = headingCheese.mult(deltas);
+        SimpleMatrix newPose = pose.plus(cheesedDeltas);
+
+        // TODO
+        if (filtered) {
+            double dthetaDW = cheesedDeltas.get(2, 0);
+            thetaDW = newPose.get(2, 0);
+
+            // TODO Handle IMU -180 to 180 or 0 to 359 bs
+            thetaIMU = imu.TODO;
+
+            thetaFiltered = kalmanFilter.predictAndUpdate(dthetaDW, thetaIMU);
+            newPose.set(2, 0, thetaFiltered);
+        }
+        return newPose;
     }
+
+
 
     public SimpleMatrix calcDelOdo() {
         //grab encoder positions
