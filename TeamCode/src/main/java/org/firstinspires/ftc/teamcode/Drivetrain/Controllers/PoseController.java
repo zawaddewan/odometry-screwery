@@ -55,16 +55,16 @@ public class PoseController {
     public SimpleMatrix calcFeedback(SimpleMatrix pose) {
         error = pose.minus(target);
         return new SimpleMatrix(new double[]{
-                xControl.calcFeedback(error.get(0, 0)),
-                yControl.calcFeedback(error.get(1, 0)),
-                thetaControl.calcFeedbackWrap(error.get(2, 0))
+                xControl.calcFeedback(error.get(0)),
+                yControl.calcFeedback(error.get(1)),
+                thetaControl.calcFeedbackWrap(error.get(2))
         });
     }
 
     //calculates PID feedback, rotates it to robot coordinates, and then uses inverse kinematics to generate wheel velocities
     public SimpleMatrix update(SimpleMatrix pose) {
         SimpleMatrix feedback = calcFeedback(pose);
-        SimpleMatrix rotator = genRotateSimple(feedback.get(2), true);
+        SimpleMatrix rotator = genRotateSimple(pose.get(2), true);
         output = inverseKinematicTransform(rotator.mult(feedback));
         return  output;
 //        return rotator;
