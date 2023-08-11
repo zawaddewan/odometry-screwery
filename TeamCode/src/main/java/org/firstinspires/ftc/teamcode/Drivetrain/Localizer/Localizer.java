@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.Drivetrain.Localizer;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static org.firstinspires.ftc.teamcode.Utils.Utils.*;
 import org.ejml.simple.SimpleMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Motor.Motor;
 
 @Config
@@ -12,18 +16,23 @@ public class Localizer {
     Motor leftEncoder;
     Motor midEncoder;
     Motor rightEncoder;
+    BNO055IMU imu;
 
     public double leftPos = 0;
     public double midPos = 0;
     public double rightPos = 0;
 
-    public static double forwardOffset = -0.15575; // m
+    public static double forwardOffset = 0.15575; // m
     public static double trackWidth = 0.39; // m
     public static double ticksPerRev = 8192;
     public static double odoWheelDiameter = 0.035; //m
     public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev; // (m / rev) / (ticks / rev) = m / ticks
     public static double X_MULTIPLIER = 1;
     public static double Y_MULTIPLIER = 1;
+    public static boolean useHeading = true;
+    public static boolean useImu = false;
+    double lastImuHeading = 0;
+
 
     //magic matrix that Converts processed wheel positions to relative robot pose change
     SimpleMatrix C;
@@ -53,6 +62,11 @@ public class Localizer {
         });
 
         timer = new ElapsedTime();
+    }
+
+    public Localizer(HardwareMap hardwareMap, BNO055IMU imu) {
+        this(hardwareMap);
+        this.imu = imu;
     }
 
     public Localizer(Motor leftEncoder, Motor rightEncoder, Motor midEncoder) {
@@ -125,7 +139,7 @@ public class Localizer {
 
     public SimpleMatrix calcDelRobot() {
         //multiplying the conversion matrix with the odometry wheel matrix returns the matrix of the relative robot pose change
-
+        double heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
         SimpleMatrix delOdo = calcDelOdo();
 
 //        SimpleMatrix delRobot = C.mult(delOdo);
@@ -140,11 +154,20 @@ public class Localizer {
 
         SimpleMatrix delRobot = C.mult(delOdo);
 
+        if(!useHeading) {
+            delRobot.set(2, 0);
+        }
+        else if(useImu) {
+//            if (lastImuHeading >= Math.PI && heading <= Math.PI) {
+//                heading += 2 * Math.PI;
+//            }
+            delRobot.set(2, -(heading-lastImuHeading));
+        }
+        lastImuHeading = heading;
         /*
         calculate the pose exponential and then multiply it with the robot pose change matrix
         entry (3,1) in the robot pose change matrix is the change in heading, which is used to calculate the pose exponential
         */
-
         return calcPoseExp(delRobot.get(2, 0)).mult(delRobot);
     }
 

@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Drivetrain;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.Drivetrain.Controllers.PoseController;
@@ -44,6 +46,10 @@ public class DriveTrain {
 
     Motor leftFront, leftBack, rightFront, rightBack;
 
+    public BNO055IMU imu;
+
+    VoltageSensor voltageSensor;
+
     public static double motorEpsilon = 0; //motor power setting threshold value, see Motor.java
 
 
@@ -74,9 +80,21 @@ public class DriveTrain {
             motor.setZeroPowerMode(Motor.ZeroPowerMode.BRAKE);
         }
 
+        // set up IMU
+        BNO055IMU.Parameters imuParameters = new BNO055IMU.Parameters();
+        imuParameters.mode = BNO055IMU.SensorMode.NDOF;
+        imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        imuParameters.loggingEnabled = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(imuParameters);
+
+        // set up voltage sensor
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+
         //instantiate localizer
-        localizer = new Localizer(hardwareMap);
-//        localizer = new LocalizerProcedural(hardwareMap);
+        localizer = new Localizer(hardwareMap, imu);
+//       localizer = new LocalizerProcedural(hardwareMap);
 
         //column vector of 0s aka (0, 0, 0) for (x, y, theta)
         pose = new SimpleMatrix(new double[]{0, 0, 0});
@@ -98,8 +116,9 @@ public class DriveTrain {
         toArray2 turns the matrix into a 2D array
         powers.toArray2()[i][0] accesses the ith element in the column vector
          */
+        double batteryVoltage = voltageSensor.getVoltage();
         for(int i = 0; i < 4; i++) {
-            motors[i].setPower(kF * powers.toArray2()[i][0]);
+            motors[i].setPower((12 / batteryVoltage) * kF * powers.toArray2()[i][0]);
         }
     }
 

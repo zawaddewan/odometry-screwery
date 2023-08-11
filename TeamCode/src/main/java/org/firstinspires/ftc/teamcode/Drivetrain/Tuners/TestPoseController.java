@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Drivetrain.Tuners;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,21 +22,21 @@ public class TestPoseController extends LinearOpMode {
     // Use FTCDashboard
     FtcDashboard dashboard;
 
-    public static double xTarget = 0.1;
+    public static double xTarget = 0;
     public static double yTarget = 0;
-    public static double thTarget = 0;
+    public static double thTarget = 1.57;
 
-    public static double kPx = 0.1;
+    public static double kPx = 0.3;
     public static double kIx = 0;
-    public static double kDx = 0;
+    public static double kDx = 30;
 
-    public static double kPy = 0;
+    public static double kPy = 0.3;
     public static double kIy = 0;
-    public static double kDy = 0;
+    public static double kDy = 30;
 
-    public static double kPth = 0;
+    public static double kPth = 1;
     public static double kIth = 0;
-    public static double kDth = 0;
+    public static double kDth = 30;
 
     public double[][] coefficients = new double[][] {
             new double[]{kPx, kIx, kDx},
@@ -57,6 +58,7 @@ public class TestPoseController extends LinearOpMode {
 
         @Override
         public void runOpMode() {
+            PhotonCore.enable();
             // Set dashboard
             /**
              THESE TWO LINES ARE IMPORTANT TO GET DASHBOARD
@@ -78,6 +80,14 @@ public class TestPoseController extends LinearOpMode {
              TIME-STEP/LOOP ITERATION RUNS.
              */
             ElapsedTime looptime = new ElapsedTime();
+
+            telemetry.addData("X", (drivetrain.pose.get(0, 0)));
+            telemetry.addData("Y", (drivetrain.pose.get(1, 0)));
+            telemetry.addData("Theta", Math.toDegrees(drivetrain.pose.get(2, 0)));
+
+            telemetry.addData("XTarget", (xTarget));
+            telemetry.addData("YTarget", (yTarget));
+            telemetry.addData("ThetaTarget", Math.toDegrees(thTarget));
 
 
             /**

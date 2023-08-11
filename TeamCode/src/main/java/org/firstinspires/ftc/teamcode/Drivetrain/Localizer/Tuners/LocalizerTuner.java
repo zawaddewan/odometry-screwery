@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode.Drivetrain.Localizer.Tuners;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.util.Angle;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Drivetrain.DriveTrain;
 
 @Config
@@ -27,6 +32,8 @@ public class LocalizerTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        PhotonCore.enable();
+
         DriveTrain drivetrain = new DriveTrain(hardwareMap, true);
         // Set dashboard
         dashboard = FtcDashboard.getInstance();
@@ -48,6 +55,7 @@ public class LocalizerTuner extends LinearOpMode {
             drivetrain.controlDT(gamepad1);
 
             /**Telemetry**/
+            double heading = drivetrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
             telemetry.addLine("Looptime [ms]: " + looptime.milliseconds());
             telemetry.addLine("Left Encoder: " + (drivetrain.localizer.leftPos));
@@ -56,6 +64,7 @@ public class LocalizerTuner extends LinearOpMode {
             telemetry.addLine("X: " + (drivetrain.pose.get(0, 0)));
             telemetry.addLine("Y: " + (drivetrain.pose.get(1, 0)));
             telemetry.addLine("Theta: " + Math.toDegrees(drivetrain.pose.get(2, 0)));
+            telemetry.addLine("IMU Theta: " + heading);
 //            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(0, 0));
 //            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(1, 0));
 //            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(2, 0));

@@ -5,9 +5,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class PIDController {
     public double kP, kD, kI, filterGain,
             lastFilterEstimate, tolerance, target,
-            lastError, integral, maxIntegral;
+            lastError, integral;
 
     ElapsedTime timer;
+
+    // TODO: throw this in constructor
+    public static double maxIntegral = 1000;
 
     public PIDController(double kP, double kI, double kD, double filterGain, double tolerance) {
         this.kP = kP;
@@ -16,7 +19,7 @@ public class PIDController {
         this.filterGain = filterGain;
         this.tolerance = tolerance;
         timer = new ElapsedTime();
-        maxIntegral = Integer.MAX_VALUE;
+
         lastError = 0;
         lastFilterEstimate = 0;
     }
