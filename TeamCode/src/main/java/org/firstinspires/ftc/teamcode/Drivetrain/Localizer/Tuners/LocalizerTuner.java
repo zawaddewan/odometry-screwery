@@ -55,19 +55,20 @@ public class LocalizerTuner extends LinearOpMode {
             drivetrain.controlDT(gamepad1);
 
             /**Telemetry**/
-            double heading = drivetrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+//            double heading = drivetrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
             telemetry.addLine("Looptime [ms]: " + looptime.milliseconds());
-            telemetry.addLine("Left Encoder: " + (drivetrain.localizer.leftPos));
-            telemetry.addLine("Right Encoder: " + (drivetrain.localizer.rightPos));
             telemetry.addLine("Horizontal Encoder: " + (drivetrain.localizer.midPos));
             telemetry.addLine("X: " + (drivetrain.pose.get(0, 0)));
             telemetry.addLine("Y: " + (drivetrain.pose.get(1, 0)));
             telemetry.addLine("Theta: " + Math.toDegrees(drivetrain.pose.get(2, 0)));
-            telemetry.addLine("IMU Theta: " + heading);
-//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(0, 0));
-//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(1, 0));
-//            telemetry.addLine("" + drivetrain.localizer.calcDelRobot().get(2, 0));
+
+            telemetry.addData("IMU Theta", Math.toDegrees(drivetrain.localizer.thetaIMU));
+            telemetry.addData("Deadwheel Theta", Math.toDegrees(drivetrain.localizer.thetaDW));
+            telemetry.addData("Filtered Theta", Math.toDegrees(drivetrain.localizer.thetaFiltered));
+
+            telemetry.addData("Kalman gain", drivetrain.localizer.kalmanFilter.K);
+
             telemetry.update();
 
 

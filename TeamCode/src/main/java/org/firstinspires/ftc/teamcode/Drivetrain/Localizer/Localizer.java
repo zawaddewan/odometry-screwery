@@ -34,7 +34,7 @@ public class Localizer {
 
     // Tune-able parameters
     public static double forwardOffset = 0.15575; // [m]
-    public static double trackWidth = 0.39; // [m]
+    public static double trackWidth = 0.3982; // [m]
     public static double ticksPerRev = 8192;
     public static double odoWheelDiameter = 0.035; // [m]
     public static double mPerTick = odoWheelDiameter * Math.PI / ticksPerRev;
@@ -42,12 +42,12 @@ public class Localizer {
     public static double Y_MULTIPLIER = 1;
     public static boolean useHeading = true; // debugging flag to exclude heading measurement
     public static boolean useImu = false; // flag to use IMU in localization
-    public static boolean useFilter = true; // flag to deadwheel-IMU-fused heading
+    public static boolean useFilter = false; // flag to deadwheel-IMU-fused heading
 
     // Kalman filter
     public static double Q = 0.01; // model covariance
     public static double R = 0.01; // sensor covariance
-    KalmanFilter kalmanFilter;
+    public KalmanFilter kalmanFilter;
 
     // Magic matrix that converts processed wheel positions
     // to relative robot pose change
@@ -131,7 +131,7 @@ public class Localizer {
 
         if (useFilter) {
             double dthetaDW = cheesedDeltas.get(2, 0);
-            thetaDW = newPose.get(2, 0);
+            thetaDW += dthetaDW;
 
             // TODO Handle IMU -180 to 180 or 0 to 359 bs
             thetaIMU = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;

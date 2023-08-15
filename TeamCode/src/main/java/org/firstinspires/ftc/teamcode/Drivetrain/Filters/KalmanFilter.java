@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Drivetrain.Filters;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class KalmanFilter {
     // Covariances. Note the the "model" covariance
     // could also be a covariance associated with a
@@ -9,8 +12,8 @@ public class KalmanFilter {
 
     double x; // state
 
-    double p = 1;
-    double K = 1; // Kalman gain
+    public static double p = 1;
+    public static double K = 0.5; // Kalman gain
 
     double p_prev = p;
     double x_prev = x;
@@ -32,6 +35,7 @@ public class KalmanFilter {
         x = x_prev + u;
         p = p_prev + Q;
         K = p / (p + R);
+
 
         // Update
         x = x + K * (z - x);
